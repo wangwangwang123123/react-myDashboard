@@ -9,15 +9,42 @@ import { CreateButton, DeleteButton, EditButton, FilterDropdown, List, useTable 
 import { getDefaultFilter, useGo } from '@refinedev/core';
 
 import { Input, Space, Table } from 'antd';
-import { values } from 'lodash';
+
 import React, { useState } from 'react'
 
-const CompanyList= () => {
+const CompanyList= ({children } : React.PropsWithChildren) => {
   const go = useGo();
   const { tableProps, filters} = useTable({
-    resource: 'companies',
+    resource: "companies",
+    onSearch: (values) => {
+      return [
+        {
+          field: "name",
+          operator: "contains",
+          value: values.name,
+        },
+      ];
+    },
     pagination:{
       pageSize: 12,
+    },
+    sorters: {
+      initial: [
+        {
+          field: 'createdAt',
+          order: 'desc'
+        }
+      ]
+    }
+    ,
+    filters:{
+      initial: [
+        {
+          field: 'mame',
+          operator: 'contains',
+          value: undefined
+        }
+      ]
     },
 
     meta:{
@@ -28,6 +55,7 @@ const CompanyList= () => {
 
 
   return (
+    <div>
     <List
       breadcrumb={false}
       headerButtons={()=> (
@@ -67,7 +95,7 @@ const CompanyList= () => {
               
             )}
 
-            render={(value, record) => (
+            render={(_, record) => (
               <Space>
                     <CustomAvatar shape='square' name={record.name} src={record.avatarUrl}/>
                     <Text style={{whiteSpace: 'nowrap'}}>
@@ -112,6 +140,8 @@ const CompanyList= () => {
           
         </Table>
     </List>
+    {children}
+    </div>
   )
 }
 
